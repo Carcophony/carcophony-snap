@@ -1,0 +1,9 @@
+[
+  {
+    "id": "lfa",
+    "name": "Lexus LFA",
+    "file": "images/lfa.jpg",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  }
+]

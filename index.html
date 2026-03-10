@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Carcophony Snap – Photo Tile Puzzle</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Raleway:wght@400;600;700;900&display=swap');
+
+  :root {
+    --gold: #c9a84c;
+    --gold-light: #f0d080;
+    --dark: #0e0e0e;
+    --dark2: #1a1a1a;
+    --dark3: #252525;
+    --cream: #f5ead7;
+    --green: #4caf7d;
+    --red: #e04848;
+    --shadow: 0 4px 24px rgba(0,0,0,0.7);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Raleway', sans-serif;
+    background: var(--dark);
+    color: var(--cream);
+    min-height: 100vh;
+    overflow-x: hidden;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(201,168,76,0.03) 0px, rgba(201,168,76,0.03) 1px, transparent 1px, transparent 50px),
+      repeating-linear-gradient(-45deg, rgba(201,168,76,0.03) 0px, rgba(201,168,76,0.03) 1px, transparent 1px, transparent 50px);
+  }
+
+  /* ===== VIEWS ===== */
+  .view { display: none; min-height: 100vh; }
+  .view.active { display: flex; flex-direction: column; align-items: center; }
+
+  /* ===== MENU ===== */
+  #menu { padding: 24px 16px 40px; }
+
+  .logo-area {
+    text-align: center;
+    margin-bottom: 28px;
+    padding-top: 10px;
+  }
+
+  .logo-area h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 11vw, 88px);
+    letter-spacing: 4px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    filter: drop-shadow(0 2px 8px rgba(201,168,76,0.4));
+  }
+
+  .logo-area p {
+    font-size: clamp(11px, 2.8vw, 15px);
+    color: var(--gold);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 6px;
+    opacity: 0.8;
+  }
+
+  /* Car cards */
+  .car-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 500px;
+    margin-bottom: 28px;
+  }
+
+  .car-card {
+    background: linear-gradient(135deg, var(--dark2), var(--dark3));
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 14px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: var(--shadow);
+    position: relative;
+  }
+
+  .car-card.completed {
+    border-color: rgba(201,168,76,0.7);
+    background: linear-gradient(135deg, #1f1c0f, #2a2510);
+    box-shadow: 0 4px 20px rgba(201,168,76,0.2);
+  }
+
+  .car-card:hover { border-color: var(--gold); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(201,168,76,0.2); }
+  .car-card:active { transform: scale(0.98); }
+
+  .car-card-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.85);
+    transition: filter 0.3s;
+  }
+  .car-card:hover .car-card-img { filter: brightness(1); }
+
+  .car-card-body {
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .car-card-info .car-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(20px, 5vw, 26px);
+    letter-spacing: 2px;
+    color: var(--cream);
+  }
+
+  .car-card-info .car-bests {
+    font-size: 12px;
+    color: var(--gold);
+    margin-top: 3px;
+    line-height: 1.6;
+  }
+
+  .car-card-info .car-bests .done { color: var(--green); }
+
+  .car-card-arrow {
+    font-size: 24px;
+    color: var(--gold);
+    opacity: 0.6;
+  }
+
+  /* How to play */
+  .how-to {
+    max-width: 500px;
+    text-align: center;
+    font-size: 13px;
+    color: rgba(245,234,215,0.45);
+    line-height: 1.7;
+    margin-bottom: 16px;
+  }
+
+  .btn-clear {
+    background: none;
+    border: 1px solid rgba(224,72,72,0.4);
+    color: rgba(224,72,72,0.6);
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Raleway', sans-serif;
+    transition: all 0.2s;
+  }
+  .btn-clear:hover { border-color: var(--red); color: var(--red); }
+
+  /* ===== DIFFICULTY PICKER ===== */
+  #difficulty {
+    padding: 24px 16px;
+    justify-content: center;
+  }
+
+  .diff-car-preview {
+    width: min(80vw, 320px);
+    height: min(80vw, 320px);
+    border-radius: 16px;
+    object-fit: cover;
+    border: 2px solid rgba(201,168,76,0.4);
+    box-shadow: 0 0 40px rgba(201,168,76,0.15);
+    margin-bottom: 24px;
+  }
+
+  .diff-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(28px, 6vw, 42px);
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .diff-subtitle {
+    font-size: 13px;
+    color: rgba(245,234,215,0.5);
+    text-align: center;
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+  }
+
+  .diff-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+    margin-bottom: 16px;
+  }
+
+  .diff-btn {
+    border: none;
+    border-radius: 12px;
+    padding: 16px 24px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .diff-btn.easy {
+    background: linear-gradient(135deg, #1a3a20, #254d2a);
+    color: #6eff9d;
+    border: 1px solid rgba(76,175,125,0.4);
+  }
+  .diff-btn.easy:hover { border-color: var(--green); box-shadow: 0 4px 20px rgba(76,175,125,0.2); transform: translateY(-1px); }
+
+  .diff-btn.medium {
+    background: linear-gradient(135deg, #2a2000, #3a2e00);
+    color: var(--gold-light);
+    border: 1px solid rgba(201,168,76,0.4);
+  }
+  .diff-btn.medium:hover { border-color: var(--gold); box-shadow: 0 4px 20px rgba(201,168,76,0.2); transform: translateY(-1px); }
+
+  .diff-btn.hard {
+    background: linear-gradient(135deg, #2a0a0a, #3a1010);
+    color: #ff8080;
+    border: 1px solid rgba(224,72,72,0.4);
+  }
+  .diff-btn.hard:hover { border-color: var(--red); box-shadow: 0 4px 20px rgba(224,72,72,0.2); transform: translateY(-1px); }
+
+  .diff-btn-sub {
+    font-family: 'Raleway', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    opacity: 0.65;
+  }
+
+  .diff-best {
+    font-size: 11px;
+    color: rgba(245,234,215,0.4);
+    text-align: center;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    min-height: 18px;
+  }
+  .diff-best.set { color: var(--green); }
+
+  /* ===== PLAY SCREEN ===== */
+  #play { padding: 12px 16px 24px; }
+
+  .play-header {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .play-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(18px, 4vw, 26px);
+    letter-spacing: 2px;
+    color: var(--gold);
+  }
+
+  .sound-toggle {
+    background: var(--dark3);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--cream);
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: 'Raleway', sans-serif;
+    transition: all 0.2s;
+  }
+  .sound-toggle:hover { border-color: var(--gold); }
+
+  .stats-bar {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .stat-box {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 10px 16px;
+    text-align: center;
+    flex: 1;
+  }
+
+  .stat-box .stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  .stat-box .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 1px;
+    color: var(--cream);
+    line-height: 1.1;
+  }
+
+  /* PUZZLE GRID */
+  .puzzle-wrapper {
+    position: relative;
+    width: min(92vw, 92vh - 240px, 480px);
+    aspect-ratio: 1;
+    margin-bottom: 14px;
+  }
+
+  .puzzle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100%;
+    height: 100%;
+    gap: 3px;
+    background: #000;
+    border: 2px solid rgba(201,168,76,0.35);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .tile {
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    transition: filter 0.12s ease, transform 0.12s ease;
+    background-size: 300% 300%;
+    background-repeat: no-repeat;
+  }
+
+  .tile:hover { filter: brightness(1.12); }
+  .tile:active { transform: scale(0.96); }
+
+  /* Ghost tile — shows faded correct image slice */
+  .tile.ghost {
+    cursor: default;
+    opacity: 1;
+  }
+  .tile.ghost .ghost-img {
+    position: absolute;
+    inset: 0;
+    background-size: 300% 300%;
+    background-repeat: no-repeat;
+    opacity: 0.18;
+    pointer-events: none;
+  }
+  .tile.ghost:hover { filter: none; }
+  .tile.ghost:active { transform: none; }
+
+  /* Win state — all tiles snap to full brightness */
+  .puzzle-grid.solved .tile {
+    cursor: default;
+    transition: opacity 0.6s ease, filter 0.6s ease;
+  }
+  .puzzle-grid.solved .tile.ghost .ghost-img {
+    opacity: 1;
+    transition: opacity 0.6s ease;
+  }
+  .puzzle-grid.solved .tile {
+    filter: brightness(1) !important;
+  }
+
+  /* Tile number badge (small, bottom-right) */
+  .tile-num {
+    position: absolute;
+    bottom: 4px;
+    right: 5px;
+    font-size: 11px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 3px #000, 1px 1px 0 #000, -1px -1px 0 #000;
+    pointer-events: none;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  /* Peek button */
+  .peek-btn {
+    background: var(--dark3);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--cream);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .peek-btn:hover { border-color: var(--gold); }
+  .peek-btn.peeking { border-color: var(--gold); background: rgba(201,168,76,0.1); }
+  .peek-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* Peek overlay */
+  .peek-overlay {
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: 10;
+  }
+  .peek-overlay.visible { opacity: 1; }
+  .peek-overlay img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .peek-overlay-label {
+    position: absolute;
+    bottom: 8px;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-shadow: 0 2px 8px #000;
+  }
+
+  .play-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), #a87c2e);
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 3px 12px rgba(201,168,76,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(201,168,76,0.4); }
+  .btn-primary:active { transform: scale(0.97); }
+
+  .btn-secondary {
+    background: var(--dark3);
+    color: var(--cream);
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--gold); }
+  .btn-secondary:active { transform: scale(0.97); }
+
+  /* Difficulty badge on play screen */
+  .diff-badge {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+  }
+  .diff-badge.easy   { background: rgba(76,175,125,0.2); color: #6eff9d; border: 1px solid rgba(76,175,125,0.4); }
+  .diff-badge.medium { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.35); }
+  .diff-badge.hard   { background: rgba(224,72,72,0.15); color: #ff8080; border: 1px solid rgba(224,72,72,0.35); }
+
+  /* ===== WIN SCREEN ===== */
+  #win {
+    padding: 24px 16px;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .win-congrats {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 12vw, 96px);
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(201,168,76,0.5));
+    animation: pulse 2s ease-in-out infinite;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+
+  @keyframes pulse {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(201,168,76,0.5)); }
+    50%      { filter: drop-shadow(0 0 50px rgba(201,168,76,0.95)); }
+  }
+
+  .win-subtitle {
+    font-size: clamp(13px, 3.2vw, 17px);
+    color: var(--cream);
+    opacity: 0.9;
+    margin-bottom: 6px;
+    line-height: 1.5;
+  }
+
+  .win-pb {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  /* Solved image preview on win screen */
+  .win-img-wrap {
+    position: relative;
+    width: min(75vw, 300px);
+    height: min(75vw, 300px);
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid var(--gold);
+    box-shadow: 0 0 40px rgba(201,168,76,0.35);
+    margin: 0 auto 20px;
+    animation: revealImg 0.8s ease-out both;
+  }
+
+  @keyframes revealImg {
+    0%   { opacity: 0; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1); }
+  }
+
+  .win-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .win-stats {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 16px;
+  }
+
+  .win-stat {
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 10px;
+    padding: 10px 20px;
+    text-align: center;
+  }
+
+  .win-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  .win-stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    color: var(--cream);
+    line-height: 1.1;
+  }
+
+  .win-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .btn-share {
+    background: linear-gradient(135deg, #1a91da, #0d6cb5);
+    color: #fff;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-share:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(29,161,242,0.3); }
+
+  /* CONFETTI */
+  .confetti-container {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 100;
+    overflow: hidden;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    top: -20px;
+    opacity: 0;
+    animation: confettiFall linear forwards;
+  }
+
+  @keyframes confettiFall {
+    0%   { opacity: 1; transform: translateY(0) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(110vh) rotate(720deg); }
+  }
+
+  /* Loading state */
+  .loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.5;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 380px) {
+    .stats-bar { gap: 8px; }
+    .stat-box { padding: 8px 10px; }
+    .stat-box .stat-value { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- AUDIO -->
+<audio id="snd-slide" preload="auto">
+  <source src="sounds/slide.mp3" type="audio/mpeg">
+</audio>
+<audio id="snd-win" preload="auto">
+  <source src="sounds/win.mp3" type="audio/mpeg">
+</audio>
+
+<!-- CONFETTI -->
+<div class="confetti-container" id="confetti"></div>
+
+<!-- ===== MENU ===== -->
+<div id="menu" class="view active">
+  <div class="logo-area">
+    <h1>Carcophony<br>Snap</h1>
+    <p>Slide · Reveal · Conquer</p>
+  </div>
+  <div class="car-grid" id="carGrid">
+    <div class="loading">Loading…</div>
+  </div>
+  <div class="how-to" style="max-width:500px; margin-bottom:20px;">
+    <strong>How to Play:</strong> Tap any tile next to the blank space to slide it.
+    Reassemble the photo to win. The ghost tile shows you where the blank belongs.
+    Three difficulty levels — Easy, Medium, Hard.
+  </div>
+  <button class="btn-clear" onclick="clearAllScores()">Clear All Scores</button>
+</div>
+
+<!-- ===== DIFFICULTY PICKER ===== -->
+<div id="difficulty" class="view">
+  <img id="diffCarImg" class="diff-car-preview" src="" alt="">
+  <div class="diff-title" id="diffCarName">—</div>
+  <div class="diff-subtitle">Choose your challenge</div>
+  <div class="diff-buttons" id="diffButtons"></div>
+  <button class="btn-secondary" style="margin-top:8px;" onclick="showView('menu')">← Back</button>
+</div>
+
+<!-- ===== PLAY SCREEN ===== -->
+<div id="play" class="view">
+  <div class="play-header" style="max-width:500px; width:100%;">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <div class="play-title" id="playTitle">—</div>
+      <span class="diff-badge" id="diffBadge">Easy</span>
+    </div>
+    <button class="sound-toggle" id="soundToggle" onclick="toggleSound()">🔊 On</button>
+  </div>
+
+  <div class="stats-bar" style="max-width:500px; width:100%;">
+    <div class="stat-box">
+      <div class="stat-label">Time</div>
+      <div class="stat-value" id="timerDisplay">00:00</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Moves</div>
+      <div class="stat-value" id="movesDisplay">0</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-label">Best</div>
+      <div class="stat-value" id="bestDisplay">—</div>
+    </div>
+  </div>
+
+  <div class="puzzle-wrapper" id="puzzleWrapper">
+    <div class="puzzle-grid" id="puzzleGrid"></div>
+    <!-- Peek overlay -->
+    <div class="peek-overlay" id="peekOverlay">
+      <img id="peekImg" src="" alt="">
+      <div class="peek-overlay-label">TARGET</div>
+    </div>
+  </div>
+
+  <div class="play-buttons" style="margin-bottom:12px;">
+    <button class="peek-btn" id="peekBtn" onclick="togglePeek()">👁 Peek</button>
+    <button class="btn-primary" onclick="restartGame()">Restart</button>
+    <button class="btn-secondary" onclick="showView('difficulty'); stopTimer()">Back</button>
+  </div>
+</div>
+
+<!-- ===== WIN SCREEN ===== -->
+<div id="win" class="view">
+  <div class="win-congrats">SNAP!</div>
+  <div class="win-subtitle" id="winSubtitle"></div>
+  <div class="win-pb" id="winPB"></div>
+  <div class="win-img-wrap">
+    <img id="winImg" src="" alt="">
+  </div>
+  <div class="win-stats">
+    <div class="win-stat">
+      <div class="win-stat-label">Time</div>
+      <div class="win-stat-value" id="winTime">—</div>
+    </div>
+    <div class="win-stat">
+      <div class="win-stat-label">Moves</div>
+      <div class="win-stat-value" id="winMoves">—</div>
+    </div>
+    <div class="win-stat">
+      <div class="win-stat-label">Difficulty</div>
+      <div class="win-stat-value" id="winDiff">—</div>
+    </div>
+  </div>
+  <div class="win-buttons">
+    <button class="btn-share" onclick="shareResult()">🐦 Post to X (Twitter)</button>
+    <button class="btn-primary" onclick="restartGame()">Play Again</button>
+    <button class="btn-secondary" onclick="showView('difficulty')">Change Difficulty</button>
+    <button class="btn-secondary" onclick="showView('menu')">Back to Menu</button>
+  </div>
+</div>
+
+<script>
+// ===== CONSTANTS =====
+const GRID = 3;
+const N = 9; // 8 tiles + 1 blank
+const DIFF_NAMES  = ['Easy', 'Medium', 'Hard'];
+const DIFF_SHUFFLES = [80, 300, 800];
+const DIFF_CLASSES  = ['easy', 'medium', 'hard'];
+
+// ===== STATE =====
+let cars = [];
+let currentCar  = null;
+let currentDiff = 0; // 0=Easy 1=Medium 2=Hard
+let tiles = [];      // 0-indexed; 0=blank, 1-8=tiles
+let moves = 0;
+let seconds = 0;
+let timerInterval = null;
+let timerStarted  = false;
+let soundOn  = true;
+let interacted = false;
+let isPeeking  = false;
+let peekTimeout = null;
+let isWon = false;
+
+// ===== STORAGE =====
+function lsKey(carId, diff, type) { return `csnap_${carId}_d${diff}_${type}`; }
+
+function getBest(carId, diff) {
+  const t = localStorage.getItem(lsKey(carId, diff, 'time'));
+  return t ? parseInt(t) : null;
+}
+
+function saveBest(carId, diff, secs, mv) {
+  const existing = getBest(carId, diff);
+  if (existing === null || secs < existing) {
+    localStorage.setItem(lsKey(carId, diff, 'time'), secs);
+    localStorage.setItem(lsKey(carId, diff, 'moves'), mv);
+    return true;
+  }
+  return false;
+}
+
+function fmtTime(secs) {
+  const m = Math.floor(secs / 60).toString().padStart(2, '0');
+  const s = (secs % 60).toString().padStart(2, '0');
+  return `${m}:${s}`;
+}
+
+// ===== VIEW MANAGEMENT =====
+function showView(name) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(name).classList.add('active');
+  if (name === 'menu') renderMenu();
+}
+
+// ===== LOAD CARS =====
+async function loadCars() {
+  try {
+    const res = await fetch('cars.json');
+    cars = await res.json();
+    renderMenu();
+  } catch(e) {
+    // Fallback if fetch fails (e.g. opened locally without server)
+    cars = [{
+      id: 'lfa', name: 'Lexus LFA',
+      file: 'images/lfa.jpg',
+      difficulty: ['Easy','Medium','Hard'],
+      shuffles: [80, 300, 800]
+    }];
+    renderMenu();
+  }
+}
+
+// ===== MENU =====
+function renderMenu() {
+  const grid = document.getElementById('carGrid');
+  grid.innerHTML = '';
+
+  for (const car of cars) {
+    const anyDone = DIFF_NAMES.some((_, i) => getBest(car.id, i) !== null);
+
+    const card = document.createElement('div');
+    card.className = 'car-card' + (anyDone ? ' completed' : '');
+    card.onclick = () => pickCar(car);
+
+    const img = document.createElement('img');
+    img.className = 'car-card-img';
+    img.src = car.file;
+    img.alt = car.name;
+
+    const body = document.createElement('div');
+    body.className = 'car-card-body';
+
+    const info = document.createElement('div');
+    info.className = 'car-card-info';
+
+    const name = document.createElement('div');
+    name.className = 'car-name';
+    name.textContent = car.name;
+
+    const bests = document.createElement('div');
+    bests.className = 'car-bests';
+    bests.innerHTML = DIFF_NAMES.map((d, i) => {
+      const b = getBest(car.id, i);
+      return b !== null
+        ? `<span class="done">✅ ${d}: ${fmtTime(b)}</span>`
+        : `${d}: not yet`;
+    }).join(' &nbsp;·&nbsp; ');
+
+    info.appendChild(name);
+    info.appendChild(bests);
+
+    const arrow = document.createElement('div');
+    arrow.className = 'car-card-arrow';
+    arrow.textContent = '›';
+
+    body.appendChild(info);
+    body.appendChild(arrow);
+    card.appendChild(img);
+    card.appendChild(body);
+    grid.appendChild(card);
+  }
+}
+
+// ===== PICK CAR → DIFFICULTY SCREEN =====
+function pickCar(car) {
+  currentCar = car;
+
+  document.getElementById('diffCarImg').src = car.file;
+  document.getElementById('diffCarName').textContent = car.name;
+
+  const btns = document.getElementById('diffButtons');
+  btns.innerHTML = '';
+
+  DIFF_NAMES.forEach((name, i) => {
+    const wrap = document.createElement('div');
+
+    const btn = document.createElement('button');
+    btn.className = `diff-btn ${DIFF_CLASSES[i]}`;
+    btn.innerHTML = `<span>${name}</span><span class="diff-btn-sub">${car.shuffles[i]} shuffles</span>`;
+    btn.onclick = () => startGame(i);
+
+    const best = getBest(car.id, i);
+    const bestLine = document.createElement('div');
+    bestLine.className = 'diff-best' + (best !== null ? ' set' : '');
+    bestLine.textContent = best !== null ? `✅ Best: ${fmtTime(best)}` : 'Not yet completed';
+
+    wrap.appendChild(btn);
+    wrap.appendChild(bestLine);
+    btns.appendChild(wrap);
+  });
+
+  showView('difficulty');
+}
+
+// ===== PUZZLE LOGIC =====
+// Solved: tiles [1,2,3,4,5,6,7,8,0]  (blank = index 8 = position 9)
+function solvedState() {
+  return [1,2,3,4,5,6,7,8,0];
+}
+
+function blankIdx() { return tiles.indexOf(0); }
+
+function getNeighbours(idx) {
+  const row = Math.floor(idx / GRID), col = idx % GRID;
+  const n = [];
+  if (row > 0) n.push(idx - GRID);
+  if (row < GRID-1) n.push(idx + GRID);
+  if (col > 0) n.push(idx - 1);
+  if (col < GRID-1) n.push(idx + 1);
+  return n;
+}
+
+function shuffle(count) {
+  tiles = solvedState();
+  let prevBlank = -1;
+  for (let i = 0; i < count; i++) {
+    const blank = blankIdx();
+    const nbrs = getNeighbours(blank).filter(n => n !== prevBlank);
+    const pick = nbrs[Math.floor(Math.random() * nbrs.length)];
+    prevBlank = blank;
+    tiles[blank] = tiles[pick];
+    tiles[pick] = 0;
+  }
+}
+
+function checkWin() {
+  // Tile value N at index N-1, blank at index 8
+  for (let i = 0; i < 8; i++) if (tiles[i] !== i + 1) return false;
+  return tiles[8] === 0;
+}
+
+// ===== RENDER GRID =====
+function renderGrid() {
+  const grid = document.getElementById('puzzleGrid');
+  if (isWon) { grid.classList.add('solved'); return; }
+  grid.classList.remove('solved');
+  grid.innerHTML = '';
+
+  // Work out tile display size from wrapper
+  const wrapper = document.getElementById('puzzleWrapper');
+  const size = wrapper.offsetWidth;
+  // Each tile is 1/3 of total, gap=3px, border=2px
+  const tileSize = Math.floor((size - 4 - 6) / 3); // 2px border, 3x2px gaps
+
+  for (let i = 0; i < N; i++) {
+    const val = tiles[i];
+    const isBlank = val === 0;
+
+    // Solved position of this tile value (val 1 = row0,col0 etc)
+    // For the ghost: we need where THIS index sits in the solved image
+    const solvedRow = Math.floor(i / GRID);
+    const solvedCol = i % GRID;
+
+    const tile = document.createElement('div');
+    tile.className = 'tile' + (isBlank ? ' ghost' : '');
+    tile.dataset.idx = i;
+
+    if (!isBlank) {
+      // Where does tile 'val' come from in the solved image?
+      const srcRow = Math.floor((val - 1) / GRID);
+      const srcCol = (val - 1) % GRID;
+      tile.style.backgroundImage = `url(${currentCar.file})`;
+      tile.style.backgroundSize = `${tileSize * 3 + 6}px ${tileSize * 3 + 6}px`;
+      tile.style.backgroundPosition = `-${srcCol * (tileSize + 3)}px -${srcRow * (tileSize + 3)}px`;
+
+      // Number hint (small, subtle)
+      const num = document.createElement('div');
+      num.className = 'tile-num';
+      num.textContent = val;
+      tile.appendChild(num);
+    } else {
+      // Ghost: show faded image of the solved piece that belongs here
+      const ghost = document.createElement('div');
+      ghost.className = 'ghost-img';
+      ghost.style.backgroundImage = `url(${currentCar.file})`;
+      ghost.style.backgroundSize = `${tileSize * 3 + 6}px ${tileSize * 3 + 6}px`;
+      ghost.style.backgroundPosition = `-${solvedCol * (tileSize + 3)}px -${solvedRow * (tileSize + 3)}px`;
+      tile.appendChild(ghost);
+    }
+
+    tile.onclick = () => tryMove(i);
+    grid.appendChild(tile);
+  }
+}
+
+// ===== MOVE =====
+function tryMove(idx) {
+  if (isWon) return;
+  const blank = blankIdx();
+  if (!getNeighbours(blank).includes(idx)) return;
+
+  if (!timerStarted) { startTimer(); timerStarted = true; }
+  interacted = true;
+
+  tiles[blank] = tiles[idx];
+  tiles[idx] = 0;
+  moves++;
+  document.getElementById('movesDisplay').textContent = moves;
+  playSound('slide');
+  renderGrid();
+
+  if (checkWin()) setTimeout(handleWin, 300);
+}
+
+// ===== TIMER =====
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    seconds++;
+    document.getElementById('timerDisplay').textContent = fmtTime(seconds);
+  }, 1000);
+}
+
+function stopTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  timerInterval = null;
+}
+
+function resetTimer() {
+  stopTimer();
+  seconds = 0;
+  timerStarted = false;
+  document.getElementById('timerDisplay').textContent = '00:00';
+}
+
+// ===== START GAME =====
+function startGame(diffIdx) {
+  currentDiff = diffIdx;
+  isWon = false;
+  moves = 0;
+  isPeeking = false;
+  if (peekTimeout) clearTimeout(peekTimeout);
+  document.getElementById('peekOverlay').classList.remove('visible');
+  document.getElementById('peekBtn').classList.remove('peeking');
+  resetTimer();
+
+  document.getElementById('playTitle').textContent = currentCar.name;
+  document.getElementById('movesDisplay').textContent = '0';
+
+  // Difficulty badge
+  const badge = document.getElementById('diffBadge');
+  badge.textContent = DIFF_NAMES[diffIdx];
+  badge.className = `diff-badge ${DIFF_CLASSES[diffIdx]}`;
+
+  const best = getBest(currentCar.id, diffIdx);
+  document.getElementById('bestDisplay').textContent = best !== null ? fmtTime(best) : '—';
+
+  // Peek image
+  document.getElementById('peekImg').src = currentCar.file;
+
+  shuffle(currentCar.shuffles[diffIdx]);
+  showView('play');
+
+  // Render after layout settles
+  requestAnimationFrame(() => { requestAnimationFrame(renderGrid); });
+
+  soundOn = localStorage.getItem('csnap_sound') !== 'off';
+  document.getElementById('soundToggle').textContent = soundOn ? '🔊 On' : '🔇 Off';
+}
+
+function restartGame() { startGame(currentDiff); }
+
+// ===== PEEK =====
+function togglePeek() {
+  if (isWon) return;
+  const overlay = document.getElementById('peekOverlay');
+  const btn = document.getElementById('peekBtn');
+
+  if (isPeeking) {
+    isPeeking = false;
+    overlay.classList.remove('visible');
+    btn.classList.remove('peeking');
+    if (peekTimeout) clearTimeout(peekTimeout);
+    return;
+  }
+
+  isPeeking = true;
+  overlay.classList.add('visible');
+  btn.classList.add('peeking');
+
+  // Auto-hide after 2.5 seconds
+  peekTimeout = setTimeout(() => {
+    isPeeking = false;
+    overlay.classList.remove('visible');
+    btn.classList.remove('peeking');
+  }, 2500);
+}
+
+// ===== WIN =====
+function handleWin() {
+  isWon = true;
+  stopTimer();
+  playSound('win');
+
+  // Show solved grid briefly before transitioning
+  const grid = document.getElementById('puzzleGrid');
+  grid.classList.add('solved');
+  renderGrid();
+
+  const isNew = saveBest(currentCar.id, currentDiff, seconds, moves);
+
+  setTimeout(() => {
+    document.getElementById('winSubtitle').textContent =
+      `${currentCar.name} snapped on ${DIFF_NAMES[currentDiff]} in ${fmtTime(seconds)}!`;
+
+    document.getElementById('winPB').textContent =
+      isNew ? '🎉 New Personal Best!' : `Personal Best: ${fmtTime(getBest(currentCar.id, currentDiff))}`;
+
+    document.getElementById('winImg').src = currentCar.file;
+    document.getElementById('winTime').textContent = fmtTime(seconds);
+    document.getElementById('winMoves').textContent = moves;
+    document.getElementById('winDiff').textContent = DIFF_NAMES[currentDiff];
+
+    launchConfetti();
+    showView('win');
+  }, 800);
+}
+
+// ===== SOUND =====
+function playSound(name) {
+  if (!soundOn || !interacted) return;
+  const el = document.getElementById('snd-' + name);
+  if (!el) return;
+  try { el.currentTime = 0; el.play().catch(() => {}); } catch(e) {}
+}
+
+function toggleSound() {
+  soundOn = !soundOn;
+  localStorage.setItem('csnap_sound', soundOn ? 'on' : 'off');
+  document.getElementById('soundToggle').textContent = soundOn ? '🔊 On' : '🔇 Off';
+}
+
+// ===== SHARE =====
+function shareResult() {
+  const text = `📸 Snapped the ${currentCar.name} on ${DIFF_NAMES[currentDiff]} in ${fmtTime(seconds)} (${moves} moves)! 🚗 https://carcophony.github.io/carcophony-snap/ #CarcophonySnap`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+// ===== CLEAR SCORES =====
+function clearAllScores() {
+  if (!confirm('Clear all scores? This cannot be undone.')) return;
+  for (const car of cars) {
+    for (let d = 0; d < 3; d++) {
+      localStorage.removeItem(lsKey(car.id, d, 'time'));
+      localStorage.removeItem(lsKey(car.id, d, 'moves'));
+    }
+  }
+  renderMenu();
+}
+
+// ===== CONFETTI =====
+function launchConfetti() {
+  const container = document.getElementById('confetti');
+  container.innerHTML = '';
+  const colors = ['#c9a84c','#f0d080','#fff','#4caf7d','#4169e1','#e04848','#e87db0','#f0d020'];
+  for (let i = 0; i < 120; i++) {
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const left  = Math.random() * 100;
+    const delay = Math.random() * 1.5;
+    const dur   = 2.5 + Math.random() * 2;
+    const size  = 6 + Math.random() * 10;
+    const shape = Math.random() > 0.5 ? '50%' : '0';
+    piece.style.cssText = `left:${left}%;background:${color};width:${size}px;height:${size * (Math.random()>0.5?1:2.2)}px;border-radius:${shape};animation-duration:${dur}s;animation-delay:${delay}s;`;
+    container.appendChild(piece);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 6000);
+}
+
+// ===== TOUCH + KEYBOARD =====
+document.addEventListener('touchstart', () => { interacted = true; }, { once:true, passive:true });
+document.addEventListener('click',      () => { interacted = true; }, { once:true });
+
+document.addEventListener('keydown', (e) => {
+  if (!document.getElementById('play').classList.contains('active')) return;
+  const blank = blankIdx();
+  let target = -1;
+  if (e.key === 'ArrowUp')    target = blank + GRID;
+  if (e.key === 'ArrowDown')  target = blank - GRID;
+  if (e.key === 'ArrowLeft')  target = blank + 1;
+  if (e.key === 'ArrowRight') target = blank - 1;
+  if (target >= 0 && target < N && getNeighbours(blank).includes(target)) tryMove(target);
+  e.preventDefault();
+});
+
+// Resize — re-render grid with correct tile sizes
+window.addEventListener('resize', () => {
+  if (document.getElementById('play').classList.contains('active') && currentCar) {
+    requestAnimationFrame(renderGrid);
+  }
+});
+
+// ===== INIT =====
+loadCars();
+</script>
+</body>
+</html>

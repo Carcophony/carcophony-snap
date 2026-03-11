@@ -1,8 +1,106 @@
 [
   {
-    "id": "lfa",
+    "id": "bristol-fighter",
+    "name": "Bristol Fighter",
+    "file": "images/bristol-fighter.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "bugatti-veyron",
+    "name": "Bugatti Veyron",
+    "file": "images/bugatti-veyron.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "ferrari-f40",
+    "name": "Ferrari F40",
+    "file": "images/ferrari-f40.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "ford-gt",
+    "name": "Ford GT",
+    "file": "images/ford-gt.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "honda-nsx",
+    "name": "Honda NSX",
+    "file": "images/honda-nsx.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "jaguar-xj220",
+    "name": "Jaguar XJ220",
+    "file": "images/jaguar-xj220.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "koenigsegg-ccx",
+    "name": "Koenigsegg CCX",
+    "file": "images/koenigsegg-ccx.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "lamborghini-diablo",
+    "name": "Lamborghini Diablo VT",
+    "file": "images/lamborghini-diablo.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "lexus-lfa",
     "name": "Lexus LFA",
-    "file": "images/lfa.jpg",
+    "file": "images/lexus-lfa.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "mclaren-f1",
+    "name": "McLaren F1",
+    "file": "images/mclaren-f1.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "mercedes-slr",
+    "name": "Mercedes SLR McLaren",
+    "file": "images/mercedes-slr.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "nissan-r390",
+    "name": "Nissan R390 GT1",
+    "file": "images/nissan-r390.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "pagani-zonda",
+    "name": "Pagani Zonda",
+    "file": "images/pagani-zonda.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "porsche-959",
+    "name": "Porsche 959",
+    "file": "images/porsche-959.png",
+    "difficulty": ["Easy", "Medium", "Hard"],
+    "shuffles": [80, 300, 800]
+  },
+  {
+    "id": "spyker-c8",
+    "name": "Spyker C8",
+    "file": "images/spyker-c8.png",
     "difficulty": ["Easy", "Medium", "Hard"],
     "shuffles": [80, 300, 800]
   }

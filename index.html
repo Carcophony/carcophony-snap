@@ -41,7 +41,7 @@
 
   .logo-area {
     text-align: center;
-    margin-bottom: 28px;
+    margin-bottom: 16px;
     padding-top: 10px;
   }
 
@@ -64,6 +64,67 @@
     text-transform: uppercase;
     margin-top: 6px;
     opacity: 0.8;
+  }
+
+  /* ===== SERIES PROGRESS BAR ===== */
+  .series-bar {
+    width: 100%;
+    max-width: 500px;
+    background: var(--dark2);
+    border: 1px solid rgba(201,168,76,0.3);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .series-bar-left {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .series-bar-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  .series-progress-track {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .series-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  .series-bar-right {
+    text-align: right;
+  }
+
+  .series-count {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .series-total-time {
+    font-size: 11px;
+    color: rgba(245,234,215,0.5);
+    margin-top: 2px;
   }
 
   /* Car cards */
@@ -350,7 +411,6 @@
   .tile:hover { filter: brightness(1.12); }
   .tile:active { transform: scale(0.96); }
 
-  /* Ghost tile — shows faded correct image slice */
   .tile.ghost {
     cursor: default;
     opacity: 1;
@@ -366,7 +426,6 @@
   .tile.ghost:hover { filter: none; }
   .tile.ghost:active { transform: none; }
 
-  /* Win state — all tiles snap to full brightness */
   .puzzle-grid.solved .tile {
     cursor: default;
     transition: opacity 0.6s ease, filter 0.6s ease;
@@ -379,7 +438,6 @@
     filter: brightness(1) !important;
   }
 
-  /* Tile number badge (small, bottom-right) */
   .tile-num {
     position: absolute;
     bottom: 4px;
@@ -393,7 +451,6 @@
     opacity: 0.7;
   }
 
-  /* Peek button */
   .peek-btn {
     background: var(--dark3);
     border: 1px solid rgba(201,168,76,0.3);
@@ -413,7 +470,6 @@
   .peek-btn.peeking { border-color: var(--gold); background: rgba(201,168,76,0.1); }
   .peek-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-  /* Peek overlay */
   .peek-overlay {
     position: absolute;
     inset: 0;
@@ -480,7 +536,6 @@
   .btn-secondary:hover { border-color: var(--gold); }
   .btn-secondary:active { transform: scale(0.97); }
 
-  /* Difficulty badge on play screen */
   .diff-badge {
     font-size: 11px;
     font-weight: 700;
@@ -537,7 +592,6 @@
     margin-bottom: 16px;
   }
 
-  /* Solved image preview on win screen */
   .win-img-wrap {
     position: relative;
     width: min(75vw, 300px);
@@ -614,6 +668,128 @@
   }
   .btn-share:hover { transform: translateY(-1px); box-shadow: 0 5px 18px rgba(29,161,242,0.3); }
 
+  /* ===== SERIES WIN SCREEN ===== */
+  #serieswin {
+    padding: 24px 16px 40px;
+    justify-content: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(ellipse at center, #1a1500 0%, var(--dark) 70%);
+  }
+
+  .sw-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 14vw, 110px);
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 40%, #fff8d0 50%, var(--gold-light) 60%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 30px rgba(201,168,76,0.8));
+    animation: pulse 1.5s ease-in-out infinite;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .sw-subtitle {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(18px, 4vw, 30px);
+    letter-spacing: 4px;
+    color: var(--gold-light);
+    margin-bottom: 6px;
+    opacity: 0.9;
+  }
+
+  .sw-tagline {
+    font-size: clamp(12px, 2.8vw, 15px);
+    color: rgba(245,234,215,0.6);
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  /* 3x5 mosaic of all 15 cars */
+  .sw-mosaic {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+    width: 100%;
+    max-width: 420px;
+    margin: 0 auto 20px;
+    border: 2px solid var(--gold);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(201,168,76,0.4);
+    animation: revealImg 1s ease-out both;
+  }
+
+  .sw-mosaic-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.9);
+    transition: filter 0.3s;
+  }
+  .sw-mosaic-img:hover { filter: brightness(1.1); }
+
+  .sw-total-box {
+    background: linear-gradient(135deg, #1f1c0f, #2a2510);
+    border: 1px solid var(--gold);
+    border-radius: 14px;
+    padding: 16px 28px;
+    margin-bottom: 20px;
+    display: inline-block;
+    box-shadow: 0 0 30px rgba(201,168,76,0.2);
+  }
+
+  .sw-total-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gold);
+    opacity: 0.7;
+  }
+
+  .sw-total-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 8vw, 60px);
+    letter-spacing: 3px;
+    color: var(--gold-light);
+    line-height: 1.1;
+  }
+
+  .sw-total-cars {
+    font-size: 13px;
+    color: rgba(245,234,215,0.5);
+    margin-top: 2px;
+  }
+
+  .sw-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .btn-share-gold {
+    background: linear-gradient(135deg, var(--gold), #a87c2e);
+    color: #000;
+    border: none;
+    padding: 14px 28px;
+    border-radius: 10px;
+    font-family: 'Raleway', sans-serif;
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(201,168,76,0.4);
+    letter-spacing: 1px;
+  }
+  .btn-share-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 28px rgba(201,168,76,0.6); }
+
   /* CONFETTI */
   .confetti-container {
     position: fixed;
@@ -635,7 +811,6 @@
     100% { opacity: 0; transform: translateY(110vh) rotate(720deg); }
   }
 
-  /* Loading state */
   .loading {
     display: flex;
     align-items: center;
@@ -675,13 +850,25 @@
     <h1>Carcophony<br>Snap</h1>
     <p>Slide · Reveal · Conquer</p>
   </div>
+  <div class="series-bar" id="seriesBar">
+    <div class="series-bar-left">
+      <div class="series-bar-label">Series Progress</div>
+      <div class="series-progress-track">
+        <div class="series-progress-fill" id="seriesProgressFill" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="series-bar-right">
+      <div class="series-count" id="seriesCount">0 / 15</div>
+      <div class="series-total-time" id="seriesTotalTime">Total: 00:00</div>
+    </div>
+  </div>
   <div class="car-grid" id="carGrid">
     <div class="loading">Loading…</div>
   </div>
   <div class="how-to" style="max-width:500px; margin-bottom:20px;">
     <strong>How to Play:</strong> Tap any tile next to the blank space to slide it.
     Reassemble the photo to win. The ghost tile shows you where the blank belongs.
-    Three difficulty levels — Easy, Medium, Hard.
+    Three difficulty levels — Easy, Medium, Hard. Complete all 15 cars to win the series!
   </div>
   <button class="btn-clear" onclick="clearAllScores()">Clear All Scores</button>
 </div>
@@ -722,7 +909,6 @@
 
   <div class="puzzle-wrapper" id="puzzleWrapper">
     <div class="puzzle-grid" id="puzzleGrid"></div>
-    <!-- Peek overlay -->
     <div class="peek-overlay" id="peekOverlay">
       <img id="peekImg" src="" alt="">
       <div class="peek-overlay-label">TARGET</div>
@@ -766,19 +952,36 @@
   </div>
 </div>
 
+<!-- ===== SERIES WIN SCREEN ===== -->
+<div id="serieswin" class="view">
+  <div class="sw-title">SERIES<br>MASTER!</div>
+  <div class="sw-subtitle">All 15 Cars Snapped</div>
+  <div class="sw-tagline">The garage is complete. Legendary.</div>
+  <div class="sw-mosaic" id="swMosaic"></div>
+  <div class="sw-total-box">
+    <div class="sw-total-label">Total Series Time</div>
+    <div class="sw-total-time" id="swTotalTime">00:00</div>
+    <div class="sw-total-cars">15 cars · Best times combined</div>
+  </div>
+  <div class="sw-buttons">
+    <button class="btn-share-gold" onclick="shareSeriesResult()">🏆 Share Your Achievement</button>
+    <button class="btn-secondary" onclick="showView('menu')">Back to Garage</button>
+  </div>
+</div>
+
 <script>
 // ===== CONSTANTS =====
 const GRID = 3;
-const N = 9; // 8 tiles + 1 blank
-const DIFF_NAMES  = ['Easy', 'Medium', 'Hard'];
+const N = 9;
+const DIFF_NAMES    = ['Easy', 'Medium', 'Hard'];
 const DIFF_SHUFFLES = [80, 300, 800];
 const DIFF_CLASSES  = ['easy', 'medium', 'hard'];
 
 // ===== STATE =====
 let cars = [];
 let currentCar  = null;
-let currentDiff = 0; // 0=Easy 1=Medium 2=Hard
-let tiles = [];      // 0-indexed; 0=blank, 1-8=tiles
+let currentDiff = 0;
+let tiles = [];
 let moves = 0;
 let seconds = 0;
 let timerInterval = null;
@@ -788,9 +991,11 @@ let interacted = false;
 let isPeeking  = false;
 let peekTimeout = null;
 let isWon = false;
+let seriesWinShown = false;
 
 // ===== STORAGE =====
 function lsKey(carId, diff, type) { return `csnap_${carId}_d${diff}_${type}`; }
+function lsSeriesKey() { return `csnap_series_shown`; }
 
 function getBest(carId, diff) {
   const t = localStorage.getItem(lsKey(carId, diff, 'time'));
@@ -805,6 +1010,30 @@ function saveBest(carId, diff, secs, mv) {
     return true;
   }
   return false;
+}
+
+// A car is "completed" if it has a best time on ANY difficulty
+function isCarCompleted(carId) {
+  return DIFF_NAMES.some((_, i) => getBest(carId, i) !== null);
+}
+
+// Get best time across all difficulties for a car (for series total)
+function getBestAnyDiff(carId) {
+  let best = null;
+  for (let i = 0; i < 3; i++) {
+    const t = getBest(carId, i);
+    if (t !== null && (best === null || t < best)) best = t;
+  }
+  return best;
+}
+
+function getSeriesStats() {
+  const completed = cars.filter(c => isCarCompleted(c.id));
+  const totalSecs = completed.reduce((sum, c) => {
+    const b = getBestAnyDiff(c.id);
+    return sum + (b || 0);
+  }, 0);
+  return { count: completed.length, total: cars.length, totalSecs };
 }
 
 function fmtTime(secs) {
@@ -827,10 +1056,9 @@ async function loadCars() {
     cars = await res.json();
     renderMenu();
   } catch(e) {
-    // Fallback if fetch fails (e.g. opened locally without server)
     cars = [{
-      id: 'lfa', name: 'Lexus LFA',
-      file: 'images/lfa.jpg',
+      id: 'lexus-lfa', name: 'Lexus LFA',
+      file: 'images/lexus-lfa.png',
       difficulty: ['Easy','Medium','Hard'],
       shuffles: [80, 300, 800]
     }];
@@ -843,11 +1071,18 @@ function renderMenu() {
   const grid = document.getElementById('carGrid');
   grid.innerHTML = '';
 
+  // Update series progress bar
+  const stats = getSeriesStats();
+  const pct = cars.length > 0 ? (stats.count / cars.length) * 100 : 0;
+  document.getElementById('seriesProgressFill').style.width = pct + '%';
+  document.getElementById('seriesCount').textContent = `${stats.count} / ${cars.length}`;
+  document.getElementById('seriesTotalTime').textContent = `Total: ${fmtTime(stats.totalSecs)}`;
+
   for (const car of cars) {
-    const anyDone = DIFF_NAMES.some((_, i) => getBest(car.id, i) !== null);
+    const completed = isCarCompleted(car.id);
 
     const card = document.createElement('div');
-    card.className = 'car-card' + (anyDone ? ' completed' : '');
+    card.className = 'car-card' + (completed ? ' completed' : '');
     card.onclick = () => pickCar(car);
 
     const img = document.createElement('img');
@@ -889,7 +1124,7 @@ function renderMenu() {
   }
 }
 
-// ===== PICK CAR → DIFFICULTY SCREEN =====
+// ===== PICK CAR =====
 function pickCar(car) {
   currentCar = car;
 
@@ -921,11 +1156,7 @@ function pickCar(car) {
 }
 
 // ===== PUZZLE LOGIC =====
-// Solved: tiles [1,2,3,4,5,6,7,8,0]  (blank = index 8 = position 9)
-function solvedState() {
-  return [1,2,3,4,5,6,7,8,0];
-}
-
+function solvedState() { return [1,2,3,4,5,6,7,8,0]; }
 function blankIdx() { return tiles.indexOf(0); }
 
 function getNeighbours(idx) {
@@ -952,7 +1183,6 @@ function shuffle(count) {
 }
 
 function checkWin() {
-  // Tile value N at index N-1, blank at index 8
   for (let i = 0; i < 8; i++) if (tiles[i] !== i + 1) return false;
   return tiles[8] === 0;
 }
@@ -964,18 +1194,14 @@ function renderGrid() {
   grid.classList.remove('solved');
   grid.innerHTML = '';
 
-  // Work out tile display size from wrapper
   const wrapper = document.getElementById('puzzleWrapper');
   const size = wrapper.offsetWidth;
-  // Each tile is 1/3 of total, gap=3px, border=2px
-  const tileSize = Math.floor((size - 4 - 6) / 3); // 2px border, 3x2px gaps
+  const tileSize = Math.floor((size - 4 - 6) / 3);
 
   for (let i = 0; i < N; i++) {
     const val = tiles[i];
     const isBlank = val === 0;
 
-    // Solved position of this tile value (val 1 = row0,col0 etc)
-    // For the ghost: we need where THIS index sits in the solved image
     const solvedRow = Math.floor(i / GRID);
     const solvedCol = i % GRID;
 
@@ -984,20 +1210,17 @@ function renderGrid() {
     tile.dataset.idx = i;
 
     if (!isBlank) {
-      // Where does tile 'val' come from in the solved image?
       const srcRow = Math.floor((val - 1) / GRID);
       const srcCol = (val - 1) % GRID;
       tile.style.backgroundImage = `url(${currentCar.file})`;
       tile.style.backgroundSize = `${tileSize * 3 + 6}px ${tileSize * 3 + 6}px`;
       tile.style.backgroundPosition = `-${srcCol * (tileSize + 3)}px -${srcRow * (tileSize + 3)}px`;
 
-      // Number hint (small, subtle)
       const num = document.createElement('div');
       num.className = 'tile-num';
       num.textContent = val;
       tile.appendChild(num);
     } else {
-      // Ghost: show faded image of the solved piece that belongs here
       const ghost = document.createElement('div');
       ghost.className = 'ghost-img';
       ghost.style.backgroundImage = `url(${currentCar.file})`;
@@ -1065,7 +1288,6 @@ function startGame(diffIdx) {
   document.getElementById('playTitle').textContent = currentCar.name;
   document.getElementById('movesDisplay').textContent = '0';
 
-  // Difficulty badge
   const badge = document.getElementById('diffBadge');
   badge.textContent = DIFF_NAMES[diffIdx];
   badge.className = `diff-badge ${DIFF_CLASSES[diffIdx]}`;
@@ -1073,13 +1295,11 @@ function startGame(diffIdx) {
   const best = getBest(currentCar.id, diffIdx);
   document.getElementById('bestDisplay').textContent = best !== null ? fmtTime(best) : '—';
 
-  // Peek image
   document.getElementById('peekImg').src = currentCar.file;
 
   shuffle(currentCar.shuffles[diffIdx]);
   showView('play');
 
-  // Render after layout settles
   requestAnimationFrame(() => { requestAnimationFrame(renderGrid); });
 
   soundOn = localStorage.getItem('csnap_sound') !== 'off';
@@ -1106,7 +1326,6 @@ function togglePeek() {
   overlay.classList.add('visible');
   btn.classList.add('peeking');
 
-  // Auto-hide after 2.5 seconds
   peekTimeout = setTimeout(() => {
     isPeeking = false;
     overlay.classList.remove('visible');
@@ -1120,11 +1339,11 @@ function handleWin() {
   stopTimer();
   playSound('win');
 
-  // Show solved grid briefly before transitioning
   const grid = document.getElementById('puzzleGrid');
   grid.classList.add('solved');
   renderGrid();
 
+  const wasAlreadyCompleted = isCarCompleted(currentCar.id);
   const isNew = saveBest(currentCar.id, currentDiff, seconds, moves);
 
   setTimeout(() => {
@@ -1141,7 +1360,66 @@ function handleWin() {
 
     launchConfetti();
     showView('win');
+
+    // Check for series completion — only trigger if this was the LAST car needed
+    if (!wasAlreadyCompleted) {
+      const stats = getSeriesStats();
+      const seriesAlreadyShown = localStorage.getItem('csnap_series_shown') === 'true';
+      if (stats.count === stats.total && !seriesAlreadyShown) {
+        // Delay series win to let the regular win screen be seen briefly
+        setTimeout(() => {
+          localStorage.setItem('csnap_series_shown', 'true');
+          launchSeriesWin(stats.totalSecs);
+        }, 3500);
+      }
+    }
   }, 800);
+}
+
+// ===== SERIES WIN =====
+function launchSeriesWin(totalSecs) {
+  // Build mosaic
+  const mosaic = document.getElementById('swMosaic');
+  mosaic.innerHTML = '';
+  for (const car of cars) {
+    const img = document.createElement('img');
+    img.className = 'sw-mosaic-img';
+    img.src = car.file;
+    img.alt = car.name;
+    mosaic.appendChild(img);
+  }
+
+  document.getElementById('swTotalTime').textContent = fmtTime(totalSecs);
+
+  launchConfetti();
+  launchConfetti(); // double confetti for the big moment
+
+  showView('serieswin');
+}
+
+// ===== SHARE =====
+function shareResult() {
+  const text = `📸 Snapped the ${currentCar.name} on ${DIFF_NAMES[currentDiff]} in ${fmtTime(seconds)} (${moves} moves)! 🚗 https://carcophony.github.io/carcophony-snap/ #CarcophonySnap`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+function shareSeriesResult() {
+  const stats = getSeriesStats();
+  const text = `🏆 SERIES MASTER! All 15 cars snapped on Carcophony Snap. Total time: ${fmtTime(stats.totalSecs)}. The garage is complete. Come and have a go! 🚗 https://carcophony.github.io/carcophony-snap/ #CarcophonySnap`;
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+// ===== CLEAR SCORES =====
+function clearAllScores() {
+  if (!confirm('Clear all scores? This cannot be undone.')) return;
+  for (const car of cars) {
+    for (let d = 0; d < 3; d++) {
+      localStorage.removeItem(lsKey(car.id, d, 'time'));
+      localStorage.removeItem(lsKey(car.id, d, 'moves'));
+    }
+  }
+  localStorage.removeItem('csnap_series_shown');
+  renderMenu();
 }
 
 // ===== SOUND =====
@@ -1158,28 +1436,9 @@ function toggleSound() {
   document.getElementById('soundToggle').textContent = soundOn ? '🔊 On' : '🔇 Off';
 }
 
-// ===== SHARE =====
-function shareResult() {
-  const text = `📸 Snapped the ${currentCar.name} on ${DIFF_NAMES[currentDiff]} in ${fmtTime(seconds)} (${moves} moves)! 🚗 https://carcophony.github.io/carcophony-snap/ #CarcophonySnap`;
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, '_blank');
-}
-
-// ===== CLEAR SCORES =====
-function clearAllScores() {
-  if (!confirm('Clear all scores? This cannot be undone.')) return;
-  for (const car of cars) {
-    for (let d = 0; d < 3; d++) {
-      localStorage.removeItem(lsKey(car.id, d, 'time'));
-      localStorage.removeItem(lsKey(car.id, d, 'moves'));
-    }
-  }
-  renderMenu();
-}
-
 // ===== CONFETTI =====
 function launchConfetti() {
   const container = document.getElementById('confetti');
-  container.innerHTML = '';
   const colors = ['#c9a84c','#f0d080','#fff','#4caf7d','#4169e1','#e04848','#e87db0','#f0d020'];
   for (let i = 0; i < 120; i++) {
     const piece = document.createElement('div');
@@ -1212,7 +1471,6 @@ document.addEventListener('keydown', (e) => {
   e.preventDefault();
 });
 
-// Resize — re-render grid with correct tile sizes
 window.addEventListener('resize', () => {
   if (document.getElementById('play').classList.contains('active') && currentCar) {
     requestAnimationFrame(renderGrid);

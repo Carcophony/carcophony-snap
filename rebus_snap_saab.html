@@ -509,8 +509,8 @@ function shareResult(){
   const decoded=document.getElementById('winRebusTime').textContent!=='DNF';
   const total=parseInt(localStorage.getItem(lsKey('time'))||0);
   const text=decoded
-    ? `🚗 Rebus Snap — Solved the puzzle AND decoded Mystery Car 1 in ${fmtTime(total)} (${moves} moves)! Can you? https://carcophony.github.io/carcophony-snap/rebus_snap_saab.html #RebusSnap`
-    : `🚗 Rebus Snap — Solved the sliding puzzle but couldn't crack the Rebus! Can you? https://carcophony.github.io/carcophony-snap/rebus_snap_saab.html #RebusSnap`;
+    ? `🚗 Rebus Snap — Solved the puzzle AND decoded Mystery Car 1 in ${fmtTime(total)} (${moves} moves)! Can you? https://tinyurl.com/RebusPuzzleOne #RebusSnap`
+    : `🚗 Rebus Snap — Solved the sliding puzzle but couldn't crack the Rebus! Can you? https://tinyurl.com/RebusPuzzleOne #RebusSnap`;
   window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text),'_blank');
 }
 
